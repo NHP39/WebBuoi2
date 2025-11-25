@@ -1,7 +1,10 @@
+FROM maven:3-eclipse-temurin-22 AS builder
+WORKDIR /deployServletProject
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-# Click nbfs://nbhost/SystemFileSystem/Templates/Other/Dockerfile to edit this template
-
-FROM alpine:latest
-
-CMD ["/bin/sh"]
+FROM tomcat:jdk25
+RUN rm -rf /usr/local/tomcat/webapps/*
+COPY --from=builder /deployServletProject/target/Web_Buoi2-1.0-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
+EXPOSE 8080
+CMD [ "catalina.sh", "run" ]
